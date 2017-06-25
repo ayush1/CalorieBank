@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="light_sky_blue">#82CAFA</color>
+    <color name="iceburg">#56A5EC</color>
+    <color name="white">#fff</color>
+    <color name="google">#d34836</color>
+</resources>

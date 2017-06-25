@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">StepCounter</string>
+    <string-array name="gender">
+        <item>Select gender</item>
+        <item>Male</item>
+        <item>Female</item>
+        <item>Other</item>
+    </string-array>
+    <string name="permission_denied_message">This permission is required to run the application, please provide it otherwise you may face difficulty in using the application.</string>
+</resources>
