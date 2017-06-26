@@ -19,6 +19,7 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".InfoActivity"/>
         <activity android:name=".SignupLoginActivity"/>
+        <receiver android:name="example.receiver.SaveCalorieReceiver"/>
     </application>
 
 </manifest>

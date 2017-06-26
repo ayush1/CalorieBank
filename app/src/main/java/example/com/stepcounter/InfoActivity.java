@@ -13,12 +13,6 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.StringTokenizer;
 
@@ -45,7 +39,11 @@ public class InfoActivity extends AppCompatActivity {
     @BindView(R.id.rl_BMI) RelativeLayout rl_BMI;
     @BindView(R.id.sp_gender) Spinner sp_gender;
 
+    private float height;
+    private String weight;
+    private float BMI;
     private UserInfo userInfo;
+    Utilities utilities = new Utilities();
 
     @OnClick(R.id.btn_submit) void onClick(){
         if(!TextUtils.isEmpty(et_age.getText().toString()) && !TextUtils.isEmpty(et_height.getText().toString())
@@ -72,11 +70,6 @@ public class InfoActivity extends AppCompatActivity {
             UserInfo.getInstance().setGender("O");
         }
     }
-
-    Utilities utilities = new Utilities();
-    float height;
-    String weight;
-    float BMI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

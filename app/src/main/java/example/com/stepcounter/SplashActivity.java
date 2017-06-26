@@ -1,23 +1,21 @@
 package example.com.stepcounter;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.viksaa.sssplash.lib.activity.AwesomeSplash;
 import com.viksaa.sssplash.lib.cnst.Flags;
 import com.viksaa.sssplash.lib.model.ConfigSplash;
 
 import java.security.SecureRandom;
+import java.util.Calendar;
 
 import example.example.Model.UserInfo;
+import example.receiver.SaveCalorieReceiver;
 import example.utils.AppConstants;
 
 
@@ -27,13 +25,29 @@ import example.utils.AppConstants;
 
 public class SplashActivity extends AwesomeSplash {
 
-    SharedPreferences preferences;
     UserInfo userInfo;
     private boolean isTokenExist = false;
     private boolean isUserSignedIn = false;
+    private PendingIntent pendingIntent;
+
+    SharedPreferences preferences;
+    SharedPreferences.Editor editor;
 
     @Override
     public void initSplash(ConfigSplash configSplash) {
+
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.set(Calendar.HOUR_OF_DAY, 22);
+        calendar.set(Calendar.MINUTE, 30);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.AM_PM,Calendar.PM);
+
+        Intent myIntent = new Intent(SplashActivity.this, SaveCalorieReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(SplashActivity.this, 0, myIntent,0);
+
+        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
 
         configSplash.setBackgroundColor(R.color.white); //any color you want form colors.xml
         configSplash.setAnimCircularRevealDuration(100); //int ms
@@ -60,7 +74,7 @@ public class SplashActivity extends AwesomeSplash {
 
     private void getTokenFromPreference() {
         preferences = getSharedPreferences(AppConstants.PREF_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
+        editor = preferences.edit();
         String token;
 
         if(!preferences.contains("token")){
@@ -70,34 +84,16 @@ public class SplashActivity extends AwesomeSplash {
         }else{
             token = preferences.getString("token", "");
             isTokenExist = true;
-            checkTokenExistOnFirebase(token);
+            isUserLoggedIn();
         }
         userInfo = UserInfo.getInstance();
         userInfo.setToken(token);
 
     }
 
-    private void checkTokenExistOnFirebase(final String token) {
+    private void isUserLoggedIn() {
         if(null != FirebaseAuth.getInstance().getCurrentUser()) {
             isUserSignedIn = true;
-            /*FirebaseDatabase.getInstance().getReference().child(FirebaseAuth.getInstance().getCurrentUser()
-                    .getUid()).child("Token").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot != null && dataSnapshot.getValue() != null) {
-                        if (token.equalsIgnoreCase(dataSnapshot.getValue().toString())) {
-                            isUserSignedIn = true;
-                        } else {
-                            isUserSignedIn = false;
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });*/
         }else{
             isUserSignedIn = false;
         }

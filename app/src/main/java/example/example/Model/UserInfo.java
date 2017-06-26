@@ -10,10 +10,10 @@ public class UserInfo {
     String weight;
     String email;
     String gender;
-    int age;
+    String caloriesBurn;
     float height;
     float BMI;
-    double calories;
+    int age;
 
     static UserInfo userInfo;
 
@@ -90,13 +90,12 @@ public class UserInfo {
         return this;
     }
 
-    public double getCalories() {
-        return calories;
+    public String getCaloriesBurn() {
+        return caloriesBurn;
     }
 
-    public UserInfo setCalories(double calories) {
-        this.calories = calories;
+    public UserInfo setCaloriesBurn(String caloriesBurn) {
+        this.caloriesBurn = caloriesBurn;
         return this;
     }
-
 }

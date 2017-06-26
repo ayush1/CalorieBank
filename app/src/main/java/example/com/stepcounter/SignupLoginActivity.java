@@ -39,12 +39,14 @@ public class SignupLoginActivity extends AppCompatActivity implements GoogleApiC
     @BindView(R.id.btn_google) Button btn_google;
     @BindView(R.id.et_name) EditText et_name;
     @BindView(R.id.et_email) EditText et_email;
-    private String email;
-    private String name;
+
     private String TAG = this.getClass().getSimpleName();
     private FirebaseAuth firebaseAuth;
-    GoogleApiClient googleApiClient;
+    private GoogleApiClient googleApiClient;
     private FirebaseAuth.AuthStateListener authStateListener;
+
+    private String email;
+    private String name;
     private UserInfo userInfo;
 
     @OnClick(R.id.btn_google) void onClick(){
@@ -65,7 +67,6 @@ public class SignupLoginActivity extends AppCompatActivity implements GoogleApiC
             @Override
             public void onAuthStateChanged(FirebaseAuth firebaseAuth) {
                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-
                 if(firebaseUser != null){
                     Log.d(TAG, "User Signed-In" + firebaseUser.getUid());
                 }else{
@@ -86,25 +87,19 @@ public class SignupLoginActivity extends AppCompatActivity implements GoogleApiC
     }
 
     private void signIn() {
-//        Intent intent = new Intent(SignupLoginActivity.this, MainActivity.class);
-//        startActivity(intent);
-
         Intent intent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
         startActivityForResult(intent, AppConstants.RC_SIGN_IN);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == AppConstants.RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
-                // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
                 // Google Sign In failed, update UI appropriately
-                // ...
             }
         }
     }

@@ -1,10 +1,51 @@
 package example.utils;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.Context;
+import android.content.Intent;
+import android.media.RingtoneManager;
+import android.support.v4.app.NotificationCompat;
+
+import example.com.stepcounter.MainActivity;
+import example.com.stepcounter.R;
+
 /**
  * Created by ayushgarg on 17/06/17.
  */
 
 public class Utilities {
+
+    private NotificationManager notificationManager;
+    private static boolean isNotificationShown;
+
+    public static void generateNotification(Context context){
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        builder.setSmallIcon(R.drawable.pedo_1);
+        builder.setContentTitle("Save Calories");
+        builder.setContentText("Save your burned calories to your calbanq!!");
+        builder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
+        builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+        builder.setAutoCancel(true);
+
+        Intent resultIntent = new Intent(context, MainActivity.class);
+        TaskStackBuilder TSB = TaskStackBuilder.create(context);
+        TSB.addParentStack(MainActivity.class);
+        // Adds the Intent that starts the Activity to the top of the stack
+        TSB.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = TSB.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        builder.setContentIntent(resultPendingIntent);
+        builder.setAutoCancel(true);
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        // mId allows you to update the notification later on.
+
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(11221, builder.build());
+
+    }
 
     public int convertFootToInch(int foot){
         return foot * 12;
@@ -46,4 +87,11 @@ public class Utilities {
         return height * 39.7;
     }
 
+    public static boolean isIsNotificationShown() {
+        return isNotificationShown;
+    }
+
+    public static void setIsNotificationShown(boolean isNotificationShown) {
+        Utilities.isNotificationShown = isNotificationShown;
+    }
 }
