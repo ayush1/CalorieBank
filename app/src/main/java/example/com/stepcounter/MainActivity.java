@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -20,9 +21,12 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.FitnessActivities;
+import com.google.android.gms.fitness.FitnessStatusCodes;
 import com.google.android.gms.fitness.data.Bucket;
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSet;
@@ -108,10 +112,13 @@ public class MainActivity extends AppCompatActivity implements
     private void initializeGoogleAPIClient() {
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Fitness.HISTORY_API)
+                .addApi(Fitness.RECORDING_API)
                 .addApi(Fitness.CONFIG_API)
                 .addScope(new Scope(Scopes.FITNESS_ACTIVITY_READ))
+                .addScope(new Scope(Scopes.FITNESS_LOCATION_READ))
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
+                .enableAutoManage(this, 0, this)
                 .build();
     }
 
@@ -144,8 +151,40 @@ public class MainActivity extends AppCompatActivity implements
             new FetchDistanceAsync().execute();
         }
 
+        subscribe();
         new FetchStepsAsync().execute();
         fetchUserGoogleFitData(selecteddate);
+    }
+
+    private void subscribe() {
+        Fitness.RecordingApi.subscribe(googleApiClient, DataType.TYPE_STEP_COUNT_DELTA)
+                .setResultCallback(new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        if (status.isSuccess()) {
+                            if (status.getStatusCode() == FitnessStatusCodes.SUCCESS_ALREADY_SUBSCRIBED) {
+                                Log.e( "RecordingAPI", "Already subscribed to the get STEPS Recording API");
+                            } else {
+                                Log.e("RecordingAPI", "Subscribed to Count Steps using Recording API");
+                            }
+                        }
+                    }
+                });
+
+        Fitness.RecordingApi.subscribe(googleApiClient, DataType.TYPE_CALORIES_EXPENDED)
+                .setResultCallback(new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        if (status.isSuccess()) {
+                            if (status.getStatusCode() == FitnessStatusCodes.SUCCESS_ALREADY_SUBSCRIBED) {
+                                Log.e( "RecordingAPI", "Already subscribed to the get Calories Recording API");
+                            } else {
+                                Log.e("RecordingAPI", "Subscribed to get Calories using Recording API");
+                            }
+
+                        }
+                    }
+                });
     }
 
     public void fetchUserGoogleFitData(String date) {
@@ -283,7 +322,20 @@ public class MainActivity extends AppCompatActivity implements
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d("yes","yes");
-                    new FetchDistanceAsync().execute();
+                    Fitness.RecordingApi.subscribe(googleApiClient, DataType.TYPE_DISTANCE_DELTA)
+                            .setResultCallback(new ResultCallback<Status>() {
+                                @Override
+                                public void onResult(Status status) {
+                                    if (status.isSuccess()) {
+                                        if (status.getStatusCode() == FitnessStatusCodes.SUCCESS_ALREADY_SUBSCRIBED) {
+                                            Log.e( "RecordingAPI", "Already subscribed to get Distance Recording API");
+                                        } else {
+                                            Log.e("RecordingAPI", "Subscribed to get distance using Recording API");
+                                        }
+                                    }
+                                    new FetchDistanceAsync().execute();
+                                }
+                            });
                 } else {
                     Log.d("yes","no");
                 }
