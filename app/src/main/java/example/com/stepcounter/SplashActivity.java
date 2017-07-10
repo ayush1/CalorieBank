@@ -38,16 +38,17 @@ public class SplashActivity extends AwesomeSplash {
 
         Calendar calendar = Calendar.getInstance();
 
-        calendar.set(Calendar.HOUR_OF_DAY, 14);
+        calendar.set(Calendar.HOUR_OF_DAY, 22);
         calendar.set(Calendar.MINUTE, 30);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.AM_PM,Calendar.PM);
 
         Intent myIntent = new Intent(SplashActivity.this, SaveCalorieReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(SplashActivity.this, 0, myIntent,0);
+        pendingIntent = PendingIntent.getBroadcast(SplashActivity.this, 0, myIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
 
         configSplash.setBackgroundColor(R.color.white); //any color you want form colors.xml
         configSplash.setAnimCircularRevealDuration(100); //int ms

@@ -29,7 +29,7 @@ public class SaveCalorieReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         preferences = context.getSharedPreferences(AppConstants.PREF_NAME, MODE_PRIVATE);
         editor = preferences.edit();
-        boolean isNotificationShown = false;
+        boolean isNotificationShown;
         try{
             if(!preferences.contains("isNotificationShown")){
                 isNotificationShown = true;
